@@ -48,7 +48,7 @@ Where:
 Output:
 The details output may contain 4 types sources unrelated to Solidity code:
 * `## compiler <name>` - this is a code from compiler's internal library, usually it is methods to load strings and to encode/decode abi data
-* `## contract metadata` - this is [metadata](https://docs.soliditylang.org/en/v0.8.15/using-the-compiler.html) appended by `solc`, e.g. swarm hash etc
+* `## contract metadata` - this is [metadata](https://docs.soliditylang.org/en/v0.8.15/metadata.html) appended by `solc`, e.g. swarm hash etc
 * `## non-mapped bytecode` - this is executable code, but without a mapping to source from compiler 
 * `## non-code bytes` - these are bytes usually located after the executable code and before the metadata ... no idea 
 
