@@ -1,7 +1,7 @@
 # Hardhat Contract Tools
 
 Outputs Solidity contract information:
-* contract sizes and contributions of each source file into it.
+* contract sizes and contributions of each source file into it (works for abstract contracts, internal libs etc).
 * storage layout of contracts with a source file for each variable.
 
 The hardhat-contract-tools are improved alternatives for:
