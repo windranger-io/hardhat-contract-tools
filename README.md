@@ -2,11 +2,11 @@
 
 Outputs Solidity contract information:
 * contract sizes and contributions of each source file into it.
-* storage layout of contracts with relevant source file.
+* storage layout of contracts with a source file for each variable.
 
 The hardhat-contract-tools are improved alternatives for:
 * [hardhat-contract-sizer](https://github.com/ItsNickBarry/hardhat-contract-sizer/) - here you can get details of contributions into contract's code size.
-* [hardhat-storage-layout](https://github.com/aurora-is-near/hardhat-storage-layout/) - here it works much faster, especially for projects with 10-100 contracts.
+* [hardhat-storage-layout](https://github.com/aurora-is-near/hardhat-storage-layout/) - here it works much faster, especially for projects with >20 contracts.
 
 
 ## Installation
