@@ -1,6 +1,9 @@
 import {extendConfig, task, types} from 'hardhat/config'
 import {HardhatConfig} from 'hardhat/types'
-import {configureCompilers, printInconsistencyWarning} from './plugin-tools'
+import {
+    configureCompilers,
+    printInconsistencyWarning
+} from '../tools/internal/plugin-tools'
 
 import path from 'path'
 import {

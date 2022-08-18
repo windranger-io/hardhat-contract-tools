@@ -2,7 +2,10 @@ import {HardhatRuntimeEnvironment} from 'hardhat/types'
 
 import fs from 'fs'
 import path from 'path'
-import {getArtifactDbgFilePath, HardhatArtifactDbgJson} from './artifacts-types'
+import {
+    getArtifactDbgFilePath,
+    HardhatArtifactDbgJson
+} from './internal/artifacts-types'
 
 export interface ContractDescription {
     sourceName: string

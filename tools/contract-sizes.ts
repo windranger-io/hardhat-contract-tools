@@ -4,7 +4,7 @@ import chalk from 'chalk'
 
 import fs from 'fs'
 import path from 'path'
-import {HardhatArtifactJson} from './artifacts-types'
+import {BuildInfoJson} from './internal/artifacts-types'
 import {ContractDescription} from './artifacts-scanner'
 
 const MAX_CONTRACT_SIZE = 24576 // applied to color contract size as green / yellow / red
@@ -38,16 +38,12 @@ export async function extractBytecodeMappings(
 
     for (const buildInfoPath of buildInfoPaths) {
         const artifact = fs.readFileSync(buildInfoPath)
-        const artifactJsonABI = JSON.parse(
-            artifact.toString()
-        ) as HardhatArtifactJson
+        const buildInfo = JSON.parse(artifact.toString()) as BuildInfoJson
 
         const sourceFiles: Map<number, string> = new Map()
-        Object.entries(artifactJsonABI.output.sources).forEach(
-            ([key, {id}]) => {
-                sourceFiles.set(id, key)
-            }
-        )
+        Object.entries(buildInfo.output.sources).forEach(([key, {id}]) => {
+            sourceFiles.set(id, key)
+        })
         sourceFiles.set(noSourceId, '## non-mapped bytecode')
         sourceFiles.set(metadataId, '## contract metadata')
         sourceFiles.set(unknownCodeId, '## non-code bytes')
@@ -67,7 +63,7 @@ export async function extractBytecodeMappings(
             }
 
             const contractInfo =
-                artifactJsonABI.output.contracts?.[sourceName]?.[contractName]
+                buildInfo.output.contracts?.[sourceName]?.[contractName]
             if (!contractInfo) {
                 return null
             }

@@ -3,14 +3,16 @@ import {HardhatRuntimeEnvironment} from 'hardhat/types'
 
 import fs from 'fs'
 import path from 'path'
-import {HardhatArtifactJson} from './artifacts-types'
+import {BuildInfoJson, createAstToFileMapping} from './internal/artifacts-types'
 import {ContractDescription} from './artifacts-scanner'
+import {ColumnOptionsRaw} from 'console-table-printer/dist/src/models/external-table'
 
 export interface StorageLayoutVariable {
     name: string
     slot: string
     offset: number
     type: string
+    sourceFile?: string
 }
 
 export interface ContractStorageLayout {
@@ -42,16 +44,19 @@ export function isInheritedStorageLayout(
 
 export async function extractContractLayout(
     env: HardhatRuntimeEnvironment,
-    contracts: ContractDescription[]
+    contracts: ContractDescription[],
+    sourceFiles?: boolean
 ): Promise<ContractStorageLayout[] | null> {
     const contractLayouts: ContractStorageLayout[] = []
 
     const buildInfoPaths = await env.artifacts.getBuildInfoPaths()
     for (const buildInfoPath of buildInfoPaths) {
         const artifact = fs.readFileSync(buildInfoPath)
-        const artifactJsonABI = JSON.parse(
-            artifact.toString()
-        ) as HardhatArtifactJson
+        const buildInfo = JSON.parse(artifact.toString()) as BuildInfoJson
+
+        const astMapping = sourceFiles
+            ? createAstToFileMapping(buildInfo)
+            : new Map<number, string>()
 
         for (const {
             sourceName,
@@ -68,7 +73,7 @@ export async function extractContractLayout(
             }
 
             const contractInfo =
-                artifactJsonABI.output.contracts?.[sourceName]?.[contractName]
+                buildInfo.output.contracts?.[sourceName]?.[contractName]
             if (!contractInfo) {
                 return null
             }
@@ -85,7 +90,8 @@ export async function extractContractLayout(
                     name: stateVariable.label,
                     slot: stateVariable.slot,
                     offset: stateVariable.offset,
-                    type: stateVariable.type
+                    type: stateVariable.type,
+                    sourceFile: astMapping.get(stateVariable.astId)
                 })
             }
             contractLayouts.push(contractLayout)
@@ -96,27 +102,34 @@ export async function extractContractLayout(
 }
 
 export function tabulateContractLayouts(
-    contracts: ContractStorageLayout[]
+    contracts: ContractStorageLayout[],
+    sourceFiles?: boolean
 ): Table {
-    const p = new Table({
-        columns: [
-            {name: 'contract', alignment: 'left'},
-            {name: 'variable', alignment: 'left'},
-            {name: 'slot', alignment: 'center'},
-            {name: 'offset', alignment: 'center'},
-            {name: 'type', alignment: 'left'}
-        ]
-    })
+    const columns: ColumnOptionsRaw[] = [
+        {name: 'contract', alignment: 'left'},
+        {name: 'variable', alignment: 'left'},
+        {name: 'slot', alignment: 'right'},
+        {name: 'offset', alignment: 'right'},
+        {name: 'type', alignment: 'left'}
+    ]
+    if (sourceFiles) {
+        columns.push({name: 'source', alignment: 'left'})
+    }
+    const p = new Table({columns})
 
     for (const contract of contracts) {
         for (const stateVariable of contract.stateVariables) {
-            p.addRow({
+            const row: Record<string, unknown> = {
                 contract: contract.printName,
                 variable: stateVariable.name,
                 slot: stateVariable.slot,
                 offset: stateVariable.offset,
                 type: stateVariable.type
-            })
+            }
+            if (sourceFiles) {
+                row.source = stateVariable.sourceFile
+            }
+            p.addRow(row)
         }
     }
 

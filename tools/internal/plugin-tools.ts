@@ -2,30 +2,34 @@ import {HardhatConfig, SolcConfig} from 'hardhat/types'
 
 export function configureCompilers(
     config: HardhatConfig,
-    selections: string[]
+    selections: string[],
+    ast?: boolean
 ): void {
     for (const compiler of config.solidity.compilers) {
-        addOutputSelections(compiler, selections)
+        addOutputSelections(compiler, '*', selections)
+        if (ast) {
+            addOutputSelections(compiler, '', ['ast'])
+        }
     }
 }
 
 export function addOutputSelections(
     compiler: SolcConfig,
+    section: string,
     selections: string[]
 ): void {
-    /* eslint-disable @typescript-eslint/no-unsafe-member-access */
+    /* eslint-disable @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment */
     compiler.settings ??= {}
     compiler.settings.outputSelection ??= {}
-    compiler.settings.outputSelection['*'] ??= {}
-    compiler.settings.outputSelection['*']['*'] ??= []
-    const outputSelection = compiler.settings.outputSelection['*'][
-        '*'
-    ] as string[]
-    /* eslint-enable @typescript-eslint/no-unsafe-member-access */
+    const outputSelection = compiler.settings.outputSelection
+    outputSelection['*'] ??= {}
+    outputSelection['*'][section] ??= []
+    const sectionSelection = outputSelection['*'][section] as string[]
+    /* eslint-enable @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment */
 
     for (const s of selections) {
-        if (!outputSelection.includes(s)) {
-            outputSelection.push(s)
+        if (!sectionSelection.includes(s)) {
+            sectionSelection.push(s)
         }
     }
 }

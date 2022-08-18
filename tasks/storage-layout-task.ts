@@ -6,20 +6,25 @@ import {
     extractContractLayout,
     tabulateContractLayouts
 } from '../tools/storage-layout'
-import {configureCompilers, printInconsistencyWarning} from './plugin-tools'
+import {
+    configureCompilers,
+    printInconsistencyWarning
+} from '../tools/internal/plugin-tools'
 
 // A much faster version of hardhat-storage-layout. Supports filtering.
 
 extendConfig((config: HardhatConfig) =>
-    configureCompilers(config, ['storageLayout'])
+    configureCompilers(config, ['storageLayout'], true)
 )
 
 task('storage-layout', 'Print storage layout of contracts')
+    .addFlag('details', 'Prints source file for each variable')
     .addOptionalVariadicPositionalParam(
         'contracts',
         'Contracts to be printed, names or FQNs'
     )
-    .setAction(async ({contracts}, hre) => {
+    .setAction(async ({details, contracts}, hre) => {
+        const verbose = Boolean(details)
         const filter = createContractFilter((contracts ?? []) as string[], [])
         const filteredContracts = await findContracts(hre, filter)
 
@@ -28,7 +33,11 @@ task('storage-layout', 'Print storage layout of contracts')
             console.log('No contracts found')
         }
 
-        const layouts = await extractContractLayout(hre, filteredContracts)
+        const layouts = await extractContractLayout(
+            hre,
+            filteredContracts,
+            verbose
+        )
 
         if (!layouts) {
             printInconsistencyWarning()
@@ -37,6 +46,6 @@ task('storage-layout', 'Print storage layout of contracts')
 
         layouts.sort((a, b) => a.printName.localeCompare(b.printName))
 
-        const table = tabulateContractLayouts(layouts)
+        const table = tabulateContractLayouts(layouts, verbose)
         table.printTable()
     })
