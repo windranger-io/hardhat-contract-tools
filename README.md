@@ -36,21 +36,24 @@ Attention! For performace reasons these tasks do NOT run hardhat `compile` and u
 Syntax:
 
 ```bash
-npx hardhat size-contracts [--details] [--diff] [--alnum] [--size <minSizeBytes>] [...<contracts>]
+npx hardhat size-contracts [--details] [--diff | --changes] [--alnum] [--size <minSizeBytes>] [...<contracts>]
 ```
 Where:
 * `--details` prints contribution of difference source files into the total size of each contract
 * `--diff` prints comparison of current contract sizes with a previous run with this flag
+* `--changes` prints only contracts with size changes, includes `--diff` flag
 * `--size` skips contracts of size smaller than `<minSizeBytes>` (NB init code size is excluded)
 * `--alnum` prints contracts in alphanumberic order (by default, order is ascending by code size, init code size is excluded)
 * `<contracts>` prints only for the given contracts, can be contract names or FQNs
 
+Filtering conditions of `--changes`, `--size` and `<contracts>` are combined as AND.
+
 Output:
 The details output may contain 4 types sources unrelated to Solidity code:
-* `## compiler <name>` - this is a code from compiler's internal library, usually it is methods to load strings and to encode/decode abi data
+* `## compiler <name>` - this is a code from compiler's internal library, usually these are methods to load strings and to encode/decode abi data
 * `## contract metadata` - this is [metadata](https://docs.soliditylang.org/en/v0.8.15/metadata.html) appended by `solc`, e.g. swarm hash etc
-* `## non-mapped bytecode` - this is executable code, but without a mapping to source from compiler 
-* `## non-code bytes` - these are bytes usually located after the executable code and before the metadata ... no idea 
+* `## non-mapped bytecode` - this is executable code, but without a mapping to source from the compiler 
+* `## non-code bytes` - these are bytes usually located between the executable code and the metadata ... no idea 
 
 ### Contract storage layout:
 

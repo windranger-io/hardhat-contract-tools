@@ -225,7 +225,8 @@ export function tabulateBytecodeMappings(
     contracts: ContractCodeMapping[],
     maxSize: number,
     verbose: boolean,
-    prev?: StoredCodeMappings
+    prev?: StoredCodeMappings,
+    onlyModified?: boolean
 ): Table {
     const codeColumnDelta = '±code'
     const codeColumnPct = 'code%'
@@ -239,6 +240,7 @@ export function tabulateBytecodeMappings(
     }
     columns.push({name: 'code', alignment: 'right'})
     const showDiff = Boolean(prev)
+    const onlyDiff = showDiff && Boolean(onlyModified)
     if (showDiff) {
         columns.push({name: codeColumnDelta, alignment: 'right'})
     }
@@ -253,6 +255,26 @@ export function tabulateBytecodeMappings(
         init: string
     }
 
+    let hasDelta = false
+    const addDelta = (v: Row, code: number, codePrev?: number): Row => {
+        // eslint-disable-next-line no-undefined
+        if (!showDiff) {
+            return v
+        }
+        const d = code - (codePrev ?? 0)
+        if (d === 0) {
+            return v
+        }
+
+        v[codeColumnDelta] =
+            d > 0
+                ? chalk.red(`+${d.toLocaleString()}`)
+                : chalk.green(`-${(-d).toLocaleString()}`)
+
+        hasDelta = true
+        return v
+    }
+
     const p = new Table({columns})
 
     for (const c of contracts) {
@@ -260,28 +282,9 @@ export function tabulateBytecodeMappings(
             // eslint-disable-next-line no-continue
             continue
         }
+        hasDelta = false
 
-        if (verbose && p.table.rows.length > 0) {
-            p.addRow({})
-        }
-
-        const addDelta = (v: Row, code: number, codePrev?: number): Row => {
-            // eslint-disable-next-line no-undefined
-            if (!showDiff) {
-                return v
-            }
-            const d = code - (codePrev ?? 0)
-            if (d === 0) {
-                return v
-            }
-
-            v[codeColumnDelta] =
-                d > 0
-                    ? chalk.red(`+${d.toLocaleString()}`)
-                    : chalk.green(`-${(-d).toLocaleString()}`)
-
-            return v
-        }
+        const rows: Row[] = []
 
         if (verbose) {
             for (const source of c.sources) {
@@ -305,7 +308,7 @@ export function tabulateBytecodeMappings(
                 const prevSize =
                     prev?.[c.uniqueName]?.sources[source.fileName]?.codeSize
 
-                p.addRow(addDelta(row, source.codeSize, prevSize))
+                rows.push(addDelta(row, source.codeSize, prevSize))
             }
         }
 
@@ -321,7 +324,14 @@ export function tabulateBytecodeMappings(
         }
 
         const prevSize = prev?.[c.uniqueName]?.codeSize
-        p.addRow(addDelta(row, c.codeSize, prevSize))
+        rows.push(addDelta(row, c.codeSize, prevSize))
+
+        if (!onlyDiff || hasDelta) {
+            if (verbose && p.table.rows.length > 0) {
+                p.addRow({})
+            }
+            p.addRows(rows)
+        }
     }
 
     return p

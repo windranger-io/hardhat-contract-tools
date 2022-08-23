@@ -36,6 +36,10 @@ task(
         'diff',
         'Print size difference with the previous run with this flag'
     )
+    .addFlag(
+        'changes',
+        'Print only contracts with size changes, includes `--diff` flag'
+    )
     .addOptionalParam(
         'size',
         'Filter by contract size (20 000 by default)',
@@ -47,7 +51,10 @@ task(
         'Contracts to be printed, names or FQNs'
     )
     .setAction(
-        async ({details: verbose, alnum, diff, size, contracts}, hre) => {
+        async (
+            {details: verbose, alnum, diff, changes, size, contracts},
+            hre
+        ) => {
             const filter = createContractFilter(
                 (contracts ?? []) as string[],
                 []
@@ -74,9 +81,11 @@ task(
                 '.wr_contract_sizer_output.json'
             )
 
+            const showDiff = Boolean(diff) || Boolean(changes)
+
             // eslint-disable-next-line no-undefined
-            const prevSizes = diff ? loadPrevSizes(savePath) : undefined
-            if (diff) {
+            const prevSizes = showDiff ? loadPrevSizes(savePath) : undefined
+            if (showDiff) {
                 savePrevSizes(savePath, mappings)
             }
 
@@ -100,7 +109,7 @@ task(
                 p.printTable()
             } else {
                 // eslint-disable-next-line no-console
-                console.log(`There are no contracts exceeding ${maxSize} bytes`)
+                console.log(`There are no contracts exceeding ${maxSize.toLocaleString()} bytes`)
             }
         }
     )
