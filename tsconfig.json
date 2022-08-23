@@ -16,6 +16,6 @@
     "types": ["node"]
   },
   "files": ["./index.ts"],
-  "include": ["./tasks/**/*.ts"],
+  "include": ["./tasks/**/*.ts", "./tools/**/*.ts"],
   "exclude": ["node_modules"]
 }
