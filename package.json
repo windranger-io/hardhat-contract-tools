@@ -25,9 +25,8 @@
     "name" : "Red Cyrax",
     "url" : "https://github.com/cyraxred"
   },
+  "files": ["dist/*", "dist/**/*"],
   "main": "dist/index.js",
-  "type": "module",
-  "types": "index.d.ts",
   "peerDependencies": {
     "hardhat": "^2.0.0"
   },
