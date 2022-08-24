@@ -36,13 +36,14 @@ Attention! For performace reasons these tasks do NOT run hardhat `compile` and u
 Syntax:
 
 ```bash
-npx hardhat contract-sizes [--details] [--diff | --changes] [--alnum] [--size <minSizeBytes>] [...<contracts>]
+npx hardhat contract-sizes [--details] [--diff | --changes] [--alnum] [--size <minSizeBytes>] [--maxsize <maxSizeBytes>] [...<contracts>]
 ```
 Where:
 * `--details` prints contribution of difference source files into the total size of each contract
 * `--diff` prints comparison of current contract sizes with a previous run with this flag
 * `--changes` prints only contracts with size changes, includes `--diff` flag
 * `--size` skips contracts of size smaller than `<minSizeBytes>` (NB init code size is excluded)
+* `--maxsize` colors contracts size above this limit as red, and above 85% of this limit as yellow (default is 24576 bytes)
 * `--alnum` prints contracts in alphanumberic order (by default, order is ascending by code size, init code size is excluded)
 * `<contracts>` prints only for the given contracts, can be contract names or FQNs
 

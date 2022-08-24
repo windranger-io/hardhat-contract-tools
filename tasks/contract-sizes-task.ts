@@ -23,6 +23,8 @@ extendConfig((config: HardhatConfig) => {
     ])
 })
 
+const MAX_CONTRACT_SIZE = 24576 // applied to color contract size as green / yellow / red
+
 task(
     'contract-sizes',
     'Prints size of contracts, including contribution of source files into bytecode of a contract'
@@ -46,15 +48,22 @@ task(
         0,
         types.int
     )
+    .addOptionalParam(
+        'maxsize',
+        'Contracts sizes above this limit will be show in red, above -15% of this will be shown as yellow',
+        MAX_CONTRACT_SIZE,
+        types.int
+    )
     .addOptionalVariadicPositionalParam(
         'contracts',
         'Contracts to be printed, names or FQNs'
     )
     .setAction(
         async (
-            {details: verbose, alnum, diff, changes, size, contracts},
+            {details: verbose, alnum, diff, changes, size, maxsize, contracts},
             hre
         ) => {
+            const sizeLimit = maxsize as number ?? MAX_CONTRACT_SIZE;
             const filter = createContractFilter(
                 (contracts ?? []) as string[],
                 []
@@ -106,7 +115,8 @@ task(
                 maxSize,
                 Boolean(verbose),
                 prevSizes,
-                onlyModified
+                onlyModified,
+                sizeLimit
             )
             if (p.table.rows.length > 0) {
                 p.printTable()

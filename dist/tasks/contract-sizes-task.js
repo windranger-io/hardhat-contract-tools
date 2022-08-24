@@ -16,14 +16,17 @@ const artifacts_scanner_1 = require("../tools/artifacts-scanner");
         'evm.deployedBytecode.sourceMap'
     ]);
 });
+const MAX_CONTRACT_SIZE = 24576; // applied to color contract size as green / yellow / red
 (0, config_1.task)('contract-sizes', 'Prints size of contracts, including contribution of source files into bytecode of a contract')
     .addFlag('details', 'Print contribution of each source files into bytecode of a contract')
     .addFlag('alnum', 'Print contracts sorted by names, not by code size')
     .addFlag('diff', 'Print size difference with the previous run with this flag')
     .addFlag('changes', 'Print only contracts with size changes, includes `--diff` flag')
     .addOptionalParam('size', 'Filter by contract size (20 000 by default)', 0, config_1.types.int)
+    .addOptionalParam('maxsize', 'Contracts sizes above this limit will be show in red, above -15% of this will be shown as yellow', MAX_CONTRACT_SIZE, config_1.types.int)
     .addOptionalVariadicPositionalParam('contracts', 'Contracts to be printed, names or FQNs')
-    .setAction(async ({ details: verbose, alnum, diff, changes, size, contracts }, hre) => {
+    .setAction(async ({ details: verbose, alnum, diff, changes, size, maxsize, contracts }, hre) => {
+    const sizeLimit = maxsize ?? MAX_CONTRACT_SIZE;
     const filter = (0, artifacts_scanner_1.createContractFilter)((contracts ?? []), []);
     const filteredContracts = await (0, artifacts_scanner_1.findContracts)(hre, filter);
     if (filteredContracts.length === 0) {
@@ -50,7 +53,7 @@ const artifacts_scanner_1 = require("../tools/artifacts-scanner");
             ? a.printName.localeCompare(b.printName)
             : a.codeSize - b.codeSize);
     const maxSize = (size ?? 0);
-    const p = (0, contract_sizes_1.tabulateBytecodeMappings)(mappings, maxSize, Boolean(verbose), prevSizes, onlyModified);
+    const p = (0, contract_sizes_1.tabulateBytecodeMappings)(mappings, maxSize, Boolean(verbose), prevSizes, onlyModified, sizeLimit);
     if (p.table.rows.length > 0) {
         p.printTable();
     }

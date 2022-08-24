@@ -7,8 +7,6 @@ import path from 'path'
 import {BuildInfoJson} from './internal/artifacts-types'
 import {ContractDescription} from './artifacts-scanner'
 
-const MAX_CONTRACT_SIZE = 24576 // applied to color contract size as green / yellow / red
-
 /* eslint-disable no-lone-blocks */
 
 export interface ContractCodeSource {
@@ -211,26 +209,32 @@ function countBytes(
     return (bytecode.length - tailLen) / 2
 }
 
-const colorSize = (code: number): string => {
-    const v = code.toLocaleString()
-    if (code > MAX_CONTRACT_SIZE) {
-        return chalk.red(v)
-    } else if (code > MAX_CONTRACT_SIZE * 0.85) {
-        return chalk.yellow(v)
-    }
-    return v
-}
-
 export function tabulateBytecodeMappings(
     contracts: ContractCodeMapping[],
     maxSize: number,
     verbose: boolean,
     prev?: StoredCodeMappings,
-    onlyModified?: boolean
+    onlyModified?: boolean,
+    sizeLimit?: number
 ): Table {
     const codeColumnDelta = '±code'
     const codeColumnPct = 'code%'
 
+    const MAX_CONTRACT_SIZE = sizeLimit ?? 0
+    const colorSize = (code: number): string => {
+        const v = code.toLocaleString()
+
+        if (MAX_CONTRACT_SIZE <= 0) {
+            return v
+        } else if (code > MAX_CONTRACT_SIZE) {
+            return chalk.red(v)
+        } else if (code > MAX_CONTRACT_SIZE * 0.85) {
+            return chalk.yellow(v)
+        }
+        return v
+    }
+    
+    
     const columns = [{name: 'contract', alignment: 'left'}]
     if (verbose) {
         columns.push(

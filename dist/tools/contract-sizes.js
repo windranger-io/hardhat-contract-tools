@@ -8,7 +8,6 @@ const console_table_printer_1 = require("console-table-printer");
 const chalk_1 = __importDefault(require("chalk"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-const MAX_CONTRACT_SIZE = 24576; // applied to color contract size as green / yellow / red
 const noSourceId = -1;
 const metadataId = -2;
 const unknownCodeId = -3;
@@ -134,19 +133,23 @@ function countBytes(sourceMap, bytecode, addSizeFn, tailLen, allowMeta) {
     }
     return (bytecode.length - tailLen) / 2;
 }
-const colorSize = (code) => {
-    const v = code.toLocaleString();
-    if (code > MAX_CONTRACT_SIZE) {
-        return chalk_1.default.red(v);
-    }
-    else if (code > MAX_CONTRACT_SIZE * 0.85) {
-        return chalk_1.default.yellow(v);
-    }
-    return v;
-};
-function tabulateBytecodeMappings(contracts, maxSize, verbose, prev, onlyModified) {
+function tabulateBytecodeMappings(contracts, maxSize, verbose, prev, onlyModified, sizeLimit) {
     const codeColumnDelta = '±code';
     const codeColumnPct = 'code%';
+    const MAX_CONTRACT_SIZE = sizeLimit ?? 0;
+    const colorSize = (code) => {
+        const v = code.toLocaleString();
+        if (MAX_CONTRACT_SIZE <= 0) {
+            return v;
+        }
+        else if (code > MAX_CONTRACT_SIZE) {
+            return chalk_1.default.red(v);
+        }
+        else if (code > MAX_CONTRACT_SIZE * 0.85) {
+            return chalk_1.default.yellow(v);
+        }
+        return v;
+    };
     const columns = [{ name: 'contract', alignment: 'left' }];
     if (verbose) {
         columns.push({ name: 'source', alignment: 'left' }, { name: codeColumnPct, alignment: 'right' });
