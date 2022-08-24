@@ -35,7 +35,7 @@ export async function findContracts(
             conflictedNames.set(contractName, conflictedFlag === false)
         }
 
-        if (filterFn?.(contractName, fullName)) {
+        if (!filterFn || filterFn(contractName, fullName)) {
             let buildInfoFile = ''
 
             if (buildInfoPaths.length > 1) {

@@ -36,7 +36,7 @@ Attention! For performace reasons these tasks do NOT run hardhat `compile` and u
 Syntax:
 
 ```bash
-npx hardhat size-contracts [--details] [--diff | --changes] [--alnum] [--size <minSizeBytes>] [...<contracts>]
+npx hardhat contract-sizes [--details] [--diff | --changes] [--alnum] [--size <minSizeBytes>] [...<contracts>]
 ```
 Where:
 * `--details` prints contribution of difference source files into the total size of each contract

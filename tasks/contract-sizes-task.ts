@@ -63,7 +63,8 @@ task(
 
             if (filteredContracts.length === 0) {
                 // eslint-disable-next-line no-console
-                console.log('No contracts found')
+                console.log(`No contracts found.\nPlease make sure that contracts are compiled${filter ? ' and matching the filter' : ''}.`)
+                return
             }
 
             const mappings = await extractBytecodeMappings(
@@ -81,7 +82,8 @@ task(
                 '.wr_contract_sizer_output.json'
             )
 
-            const showDiff = Boolean(diff) || Boolean(changes)
+            const onlyModified = Boolean(changes)
+            const showDiff = Boolean(diff) || onlyModified
 
             // eslint-disable-next-line no-undefined
             const prevSizes = showDiff ? loadPrevSizes(savePath) : undefined
@@ -103,13 +105,14 @@ task(
                 mappings,
                 maxSize,
                 Boolean(verbose),
-                prevSizes
+                prevSizes,
+                onlyModified
             )
             if (p.table.rows.length > 0) {
                 p.printTable()
             } else {
                 // eslint-disable-next-line no-console
-                console.log(`There are no contracts exceeding ${maxSize.toLocaleString()} bytes`)
+                console.log(`There are no contracts exceeding ${maxSize.toLocaleString()} bytes${onlyModified ? ' and with size(s) changed' : ''}.`)
             }
         }
     )

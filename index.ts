@@ -1,2 +1,2 @@
-import 'tasks/contract-sizes-task'
-import 'tasks/storage-layout-task'
+import './tasks/contract-sizes-task'
+import './tasks/storage-layout-task'
