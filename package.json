@@ -1,11 +1,10 @@
 {
-  "name": "@windranger-io/hardhat-contract-tools",
+  "name": "@windranger-io/windranger-tools-hardhat",
   "version": "1.0.2",
   "license": "Apache-2.0",
   "description": "Output Solidity contract sizes & layouts with Hardhat",
   "keywords": [
     "hardhat",
-    "abi",
     "solidity",
     "solc",
     "smart-contracts",
@@ -19,7 +18,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/windranger-io/hardhat-contract-tools"
+    "url": "git+https://github.com/windranger-io/windranger-tools-hardhat"
   },
   "author": {
     "name": "Red Cyrax",
