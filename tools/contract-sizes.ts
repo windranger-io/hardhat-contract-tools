@@ -233,8 +233,7 @@ export function tabulateBytecodeMappings(
         }
         return v
     }
-    
-    
+
     const columns = [{name: 'contract', alignment: 'left'}]
     if (verbose) {
         columns.push(

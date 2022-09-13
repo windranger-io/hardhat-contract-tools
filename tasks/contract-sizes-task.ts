@@ -63,7 +63,7 @@ task(
             {details: verbose, alnum, diff, changes, size, maxsize, contracts},
             hre
         ) => {
-            const sizeLimit = maxsize as number ?? MAX_CONTRACT_SIZE;
+            const sizeLimit = (maxsize as number) ?? MAX_CONTRACT_SIZE
             const filter = createContractFilter(
                 (contracts ?? []) as string[],
                 []
@@ -72,7 +72,11 @@ task(
 
             if (filteredContracts.length === 0) {
                 // eslint-disable-next-line no-console
-                console.log(`No contracts found.\nPlease make sure that contracts are compiled${filter ? ' and matching the filter' : ''}.`)
+                console.log(
+                    `No contracts found.\nPlease make sure that contracts are compiled${
+                        filter ? ' and matching the filter' : ''
+                    }.`
+                )
                 return
             }
 
@@ -122,7 +126,11 @@ task(
                 p.printTable()
             } else {
                 // eslint-disable-next-line no-console
-                console.log(`There are no contracts exceeding ${maxSize.toLocaleString()} bytes${onlyModified ? ' and with size(s) changed' : ''}.`)
+                console.log(
+                    `There are no contracts exceeding ${maxSize.toLocaleString()} bytes${
+                        onlyModified ? ' and with size(s) changed' : ''
+                    }.`
+                )
             }
         }
     )
