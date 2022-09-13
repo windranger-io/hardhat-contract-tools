@@ -1,6 +1,6 @@
 {
   "name": "@windranger-io/hardhat-contract-tools",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "license": "Apache-2.0",
   "description": "Output Solidity contract sizes & layouts with Hardhat",
   "keywords": [
@@ -22,10 +22,13 @@
     "url": "git+https://github.com/windranger-io/hardhat-contract-tools"
   },
   "author": {
-    "name" : "Red Cyrax",
-    "url" : "https://github.com/cyraxred"
+    "name": "Red Cyrax",
+    "url": "https://github.com/cyraxred"
   },
-  "files": ["dist/*", "dist/**/*"],
+  "files": [
+    "dist/*",
+    "dist/**/*"
+  ],
   "main": "dist/index.js",
   "peerDependencies": {
     "hardhat": "^2.0.0"
