@@ -1,5 +1,5 @@
 {
-  "name": "hardhat-contract-tools",
+  "name": "@windranger-io/hardhat-contract-tools",
   "version": "1.0.0",
   "license": "Apache-2.0",
   "description": "Output Solidity contract sizes & layouts with Hardhat",
