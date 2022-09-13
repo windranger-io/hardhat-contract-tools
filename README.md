@@ -12,9 +12,9 @@ The hardhat-contract-tools are improved alternatives for:
 ## Installation
 
 ```bash
-npm install --save-dev windranger-tools-hardhat
+npm install --save-dev @windranger-io/windranger-tools-hardhat
 # or
-yarn add --dev windranger-tools-hardhat
+yarn add --dev @windranger-io/windranger-tools-hardhat
 ```
 
 ## Usage
@@ -22,11 +22,11 @@ yarn add --dev windranger-tools-hardhat
 Load plugin in Hardhat config:
 
 ```javascript
-require('windranger-tools-hardhat');
+require('@windranger-io/windranger-tools-hardhat');
 ```
 
 ```typescript
-import 'windranger-tools-hardhat';
+import '@windranger-io/windranger-tools-hardhat';
 ```
 
 Attention! For performace reasons these tasks do NOT run hardhat `compile` and uses the last compiled state. 
